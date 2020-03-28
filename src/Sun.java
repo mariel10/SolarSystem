@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class Sun extends CelestialBody{
     int[] colors = new int[]{255, 0, 110, 145, 0, 0};
     Sun(){

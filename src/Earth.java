@@ -20,6 +20,7 @@ public class Earth extends Planet {
 
     public int[] getColors(){return colors;}
 
+    // дополненая информация, включающая информацию о спутнике
     public ArrayList<String> getAllInfo(double r, double speed){
         ArrayList<String> s = super.getAllInfo(r, speed);
         s.add("Количество известных спутников: 1");

@@ -36,7 +36,7 @@ public class Comets{
     public double getA(){return a;}
     public double getE(){return e;}
 
-
+    // вычисляет положение кометы
     public double[] getCoords(double dt){
 
         double[] result;

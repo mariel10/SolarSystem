@@ -4,9 +4,5 @@ public class Venus extends Planet{
         super("Venus", 4869, 6052, 108.21, 0.007, 3.39, -0.615, 76, 131);
     }
 
-    public double[] getCoords(double dt){
-        return super.getCoords(dt);
-    }
-    public double getRadius(){return super.getRadius();}
     public int[] getColors(){return colors;}
 }

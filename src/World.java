@@ -9,6 +9,7 @@ public class World {
     private SkyPanel skyPanel = new SkyPanel();
     private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
+    // располагает все основные элементы
     public void go(){
         settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.Y_AXIS));
         settingsPanel.setBorder(BorderFactory.createEmptyBorder(12,12,12,12));
@@ -26,6 +27,7 @@ public class World {
         mainFrame.setVisible(true);
     }
 
+    // располагает метки и поля ввода настройки параметров кометы, а также кнопки старт, выход, справка, стоп, сохранить, случайно
     private void getSettingsPanel(){
         int n = 7;
         JPanel settingsPanel1 = new JPanel();
@@ -219,6 +221,7 @@ public class World {
         settingsPanel.add(settingsPanel2);
     }
 
+    //случайно генерирует слудующие параметры: большая полуось, эксцентриситет, наклонение, аргумент перицентра и долгота восходящего узла
     private double[] getAEIWQ(){
         double[] result = new double[5];
         result[0] = 2500 + Math.random() * 7500; //a
@@ -229,6 +232,7 @@ public class World {
         return result;
     }
 
+    // проверка удовлетворения условиям заданных параметров кометы
     private boolean checkInput(double a, double e, double i, double w, double q, int r){
         boolean result;
 

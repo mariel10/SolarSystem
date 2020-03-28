@@ -13,18 +13,18 @@ public class SkyPanel extends JPanel implements ActionListener {
     private Timer timer;
     private int timerTime = 100;
 
-    //flag to start simulation
+    //флаг отвечающий за начало симуляции
     private boolean start = false;
 
-    //only one time needed
+    //задание планет
     private boolean setPlanets = false;
 
-    private int planet = 0; // set focus on planet. Changes from 0 (Sun) to 8  (Neptune)
-    private boolean setNamesVisible = false;
+    private int planet = 0; // выбор планеты для показа информаци
+    private boolean setNamesVisible = false; // показ названий
     // delta time
-    private double dt = 0;
-    private double dtAdd = 0.001;
-    //Celestial bodies created and their forms
+    private double dt = 0; //изменение времени
+    private double dtAdd = 0.001; // скорость моделирования
+    //Небесные тела и массивы для точек орбит
     private Sun sun = new Sun();
     private List<Triangle> oneForAll = new CelestialBody().createSketch(1);
     private Mercury mercury = new Mercury();
@@ -59,18 +59,17 @@ public class SkyPanel extends JPanel implements ActionListener {
             0, 0, 1, 0,
             0, 0, 0, 1
     });
-    // control
-    private boolean showOrbits = false;
-    private boolean showBackground = true;
-    private Color[] orbitColor = new Color[]{Color.CYAN, Color.GRAY};
-    private int colorIndex = 0;
-    private int showAllInfo = -1; // -1 no info, 0 - Sun, 1 to 8 - Planets
-    private double scale = 10;
-    private int a = 0, b = 0, c = 0, px = 0, py = 0, pz =0;
-    // rotation angles
+    // настройки показа
+    private boolean showOrbits = false; //показ орбит
+    private boolean showBackground = true; //показ заднего фона
+    private Color[] orbitColor = new Color[]{Color.CYAN, Color.GRAY}; //цвета орбит в зависимости от фона
+    private int colorIndex = 0; //выбор цвета
+    private int showAllInfo = -1; // -1 отсутствие информации; 1 - Меркурий... 8 - Нептун
+    private double scale = 10; //масштаб
+    private int a = 0, b = 0, c = 0, px = 0, py = 0, pz =0; // изменение положения : сдвиг и перемещение на планету или комету Галлея
+    // поворот относительно разных осей
     private double heading = 0;
     private double pitch = 0;
-//    double over = 0;
 //    ------------------------------------------------------------------------------------------------------------------
     public SkyPanel() {
         timer = new Timer(timerTime, this);
@@ -79,6 +78,7 @@ public class SkyPanel extends JPanel implements ActionListener {
         setFocusable(true);
     }
 
+    // начала симуляции, очистка и возвращение всех начальных параметров
     public void setStart(){
         start = true;
         dt = 0;
@@ -100,6 +100,7 @@ public class SkyPanel extends JPanel implements ActionListener {
         colorIndex = 0;
         showBackground = true;
     }
+    //остановка симуляции
     public void stopStart(){
         start = false;
         requestFocusInWindow(false);
@@ -108,11 +109,13 @@ public class SkyPanel extends JPanel implements ActionListener {
         comet = false;
     }
 
+    //создание собственной кометы
     public void setMyComet(String name, double[] aeiwq, int radius){
         comet = true;
         myComet = new Comets(name, 0, radius, aeiwq[0], aeiwq[1], aeiwq[2], 0,aeiwq[4],aeiwq[3]);
     }
 
+    // получение всех необходимых параметров всех небесных тел и подготовка к отрисовке
     public void paintComponent(Graphics g) {
         if (showBackground) {
             Image image = null;
@@ -588,6 +591,7 @@ public class SkyPanel extends JPanel implements ActionListener {
         }
     }
 
+    // из тетраэдра  делает сферу путем "раздувания" треугольников. (делением сторон пополам)
     public static List<Triangle> inflate(List<Triangle> tris, double radius) {
         List<Triangle> result = new ArrayList<>();
         for (Triangle t : tris) {
@@ -610,6 +614,7 @@ public class SkyPanel extends JPanel implements ActionListener {
         return result;
     }
 
+    // степень затемнения для создания эффекта объема. Вычисляется косинус, от которого и зависит затемнение
     public static Color getShade(int[] colors, double shade) {
         double redLinear = Math.pow(colors[0] + (int) colors[1] * Math.random(), 2.4) * shade;
         double greenLinear = Math.pow(colors[2] + (int) colors[3] * Math.random(), 2.4) * shade;
@@ -622,6 +627,8 @@ public class SkyPanel extends JPanel implements ActionListener {
         return new Color(red, green, blue);
     }
 
+    // вычисляет косинус, используемый для затемнения. Также вычисляет попадение на экран пикселей фигуры и соответственно его цвет.
+    // И добавляется на BufferedImage
     private void drawImage(BufferedImage img, List<Triangle> tris, double[] zBuffer, Matrix3 transform, int[] colors) {
         for (Triangle t : tris) {
             Vertex v1 = transform.transform4(t.v1);
@@ -675,6 +682,7 @@ public class SkyPanel extends JPanel implements ActionListener {
         }
     }
 
+    // Рисование точек относящихся к орбите
     private void drawOrbit(Graphics2D g2, Matrix3 transform, ArrayList<Vertex> all) {
         for (Vertex v: all) {
             Vertex v1 = transform.transform4(v);
@@ -683,6 +691,8 @@ public class SkyPanel extends JPanel implements ActionListener {
             g2.draw(point);
         }
     }
+    //Создание орбиты. Вычисляется шаг, зависимый от большей полуоси. Затем в зависимости от шага вычиляются точки орбиты
+    //Не являются равномерными, так как скорость меняется в разных точках нахождения тела
     private void createOrbit(ArrayList<Vertex> all, Planet body, double r){
         double step = (r * Math.PI) / (body.getA());
         double time = 0;
@@ -693,6 +703,7 @@ public class SkyPanel extends JPanel implements ActionListener {
         }
     }
 
+    //создание орбиты кометы
     private void createOrbitComet(ArrayList<Vertex> all, Comets body, double r){
         double step;
         if (body.getA() != 0)
@@ -707,21 +718,25 @@ public class SkyPanel extends JPanel implements ActionListener {
         }
     }
 
+    // выделяет конкретную планету
     private void drawSelectedOrbit(Graphics2D g2, Matrix3 transform, double[] pos, double radius){
         Vertex v2 = transform.transform4(new Vertex(pos[0], pos[1], pos[2]));
         Ellipse2D.Double circle = new Ellipse2D.Double(v2.x + getWidth() / 2 - radius* scale, v2.y + getHeight() / 2 - radius* scale, radius*2* scale , radius*2* scale);
         g2.setColor(Color.CYAN);
         g2.draw(circle);
     }
+    // выводит названия небесных тел
     private void drawNames(Graphics2D g2, Matrix3 transform, double[] xyz, String name, double radius){
         Vertex v = transform.transform4(new Vertex(xyz[0] + radius * 2, xyz[1] - radius * 2, xyz[2]));
         g2.setColor(Color.white);
         g2.drawString(name, (int)(v.x) + getWidth()/2, (int)(v.y) + getHeight()/2);
     }
 
+    // получат радиус нарисованного шара
     private double findDrawnRadius(List<Triangle> tris){
         return Math.sqrt(tris.get(0).v1.x * tris.get(0).v1.x + tris.get(0).v1.y * tris.get(0).v1.y);
     }
+    // выводит всю информацию о заданном объекте
     private void drawInfo(Graphics2D g2, Planet body, double r, double speed){
         g2.setColor(Color.WHITE);
         //String[] s = body.getAllInfo(r);
@@ -734,7 +749,7 @@ public class SkyPanel extends JPanel implements ActionListener {
         }
     }
 
-
+    // выводит информацию о Солнце
     private void drawStarInfo(Graphics2D g2, CelestialBody body){
         g2.setColor(Color.WHITE);
         String[] s = body.getInfo();
@@ -745,11 +760,12 @@ public class SkyPanel extends JPanel implements ActionListener {
             g2.drawString("", 10, y);
             y += 10;
         }
-            }
+    }
+    // описание действий каждой используемой клавиатурной клавиши
     public class KeyBoard extends KeyAdapter implements KeyListener {
         public void keyPressed(KeyEvent event) {
             int key = event.getKeyCode();
-            //scaling solar system
+            //изменение размера
             if (key == KeyEvent.VK_Q) {
                 if (scale >= 1)
                     scale += 1;
@@ -784,12 +800,12 @@ public class SkyPanel extends JPanel implements ActionListener {
                     }
                 }
             }
-            //moving solar system up/down/left/right
+            //перемещение Солнечной Системе вправо/влево/вверх/вниз
             if (key == KeyEvent.VK_W) b -= 10*scale;
             if (key == KeyEvent.VK_S) b += 10*scale;
             if (key == KeyEvent.VK_A) a -= 10*scale;
             if (key == KeyEvent.VK_D) a += 10*scale;
-            //increasing/decreasing speed
+            //увеличение и уменьшение скорости
             if (key == KeyEvent.VK_G) {
                 if (dtAdd <= 100)
                     dtAdd *= 5;
@@ -798,7 +814,7 @@ public class SkyPanel extends JPanel implements ActionListener {
                 if (dtAdd >= 0.0001)
                     dtAdd /= 5;
             }
-            //stopping and restarting
+            //остановка моделирования и возобновление
             if (key == KeyEvent.VK_O) {
                 timer.stop();
             }
@@ -806,7 +822,7 @@ public class SkyPanel extends JPanel implements ActionListener {
                 timer.restart();
             }
 
-            //rotation
+            //повороты
             if (key == KeyEvent.VK_I) {
                 pitch += 10;
             }
@@ -819,12 +835,14 @@ public class SkyPanel extends JPanel implements ActionListener {
             if (key == KeyEvent.VK_H) {
                 heading -= 10;
             }
+            //показ и скрытие орбит
             if (key == KeyEvent.VK_1) {
                 showOrbits = true;
             }
             if (key == KeyEvent.VK_2) {
                 showOrbits = false;
             }
+            // возвращение в начальное положение
             if (key == KeyEvent.VK_SPACE){
                 a = 0;
                 b = 0;
@@ -840,6 +858,7 @@ public class SkyPanel extends JPanel implements ActionListener {
                 colorIndex = 0;
                 showBackground = true;
             }
+            // перемещение на планеты
             if (key == KeyEvent.VK_F1){ //Mercury
                 dt = 0;
                 planet = 1;
@@ -876,6 +895,7 @@ public class SkyPanel extends JPanel implements ActionListener {
                 dt = 0;
                 planet = 10;
             }
+            //включение и выключение названия комет
             if (key == KeyEvent.VK_Z){
                 if (setNamesVisible){
                     setNamesVisible = false;
@@ -883,6 +903,7 @@ public class SkyPanel extends JPanel implements ActionListener {
                     setNamesVisible = true;
                 }
             }
+            // выбор планеты для вывода информации
             if (key == KeyEvent.VK_RIGHT){
                 if (showAllInfo == 8){
                     showAllInfo = -1;
@@ -897,12 +918,14 @@ public class SkyPanel extends JPanel implements ActionListener {
                     showAllInfo -= 1;
                 }
             }
+            //включение и выключение фона
             if (key == KeyEvent.VK_CAPS_LOCK){
                 showBackground = !showBackground;
                 colorIndex = (colorIndex + 1) % 2;
             }
         }
     }
+    //округление до нужного знака
     private double roundAvoid(double value, int places) {
         double scale = Math.pow(10, places);
         return Math.round(value * scale) / scale;

@@ -9,7 +9,7 @@ public class Planet extends CelestialBody{
     private double w; //аргумент перицентра
     private double T; //сидерический период
     private double m0; //средняя аномалия в эпоху t0
-    private double u = Math.sqrt(6.6 * Math.pow(10, -23) * 1.9855 * Math.pow(10, 30));
+    private double u = Math.sqrt(6.6 * Math.pow(10, -23) * 1.9855 * Math.pow(10, 30)); //гравитационная постоянная умноженная на массу Солнца
 
     public Planet(String name, double mass, int radius, double a1, double e1, double i1, double T1, double q1, double w1){
         super(name, mass, radius);
@@ -36,6 +36,8 @@ public class Planet extends CelestialBody{
         m0 = (Math.PI* 2) / T1;
     }
 
+    //вычисляет координаты положения небесного тела в зависимости от прошедшего времени.
+    //Возвращает координату по x по y по z, а также радиус и скорость в текущий момент
     public double[] getCoords(double dt){
         double[] result;
 
@@ -61,7 +63,10 @@ public class Planet extends CelestialBody{
         return result;
     }
 
+    //возвращает значение большей полуоси
     public double getA(){return this.a;}
+
+    //Собирает информацию для вывода на экран
     public ArrayList<String> getAllInfo(double r, double speed){
         ArrayList<String> s = new ArrayList<>();
         s.add("Название: " + super.getName());

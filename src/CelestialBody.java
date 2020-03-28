@@ -12,6 +12,7 @@ public class CelestialBody {
     }
     CelestialBody(){}
 
+    // создает начальный объект, который в последствие превращается в шар
     public ArrayList<Triangle> createSketch(double radius){
         double r = radius;
         ArrayList<Triangle> tris = new ArrayList<>();
@@ -33,6 +34,7 @@ public class CelestialBody {
         return tris;
     }
 
+    // создание кольца для Сатурна. Создается небольшая часть кольца, которая поврачивается нужное количество раз
     public ArrayList<Triangle> createRings(double radius){
         double r = radius *2;
         double r2 = r  + r * 0.6;
@@ -59,13 +61,16 @@ public class CelestialBody {
         return tris;
     }
 
+    // возвращает радиус небесного тела, увеличенный в 100 раз для наглядности (соотношение орбит остается реальным)
     public double getRadius(){return radius * Math.pow(10, -4);}
     public String getName(){return  name;}
     public String getMass(){return Double.toString(mass) + " * 10^23 kg";}
+    // возвращает информацию, которая испольцуется для выдачи информации о Солнце
     public String[] getInfo(){return new String[]{"Name: " + name,
             "Mass: " + Double.toString(roundAvoid(mass * Math.pow(10, -7), 4)) + " * 10 ^30 kg",
              name + " radius: " + Double.toString(radius ) + " km"};
     }
+    //округление до нужного знака
     private double roundAvoid(double value, int places) {
         double scale = Math.pow(10, places);
         return Math.round(value * scale) / scale;

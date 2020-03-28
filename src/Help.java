@@ -50,6 +50,7 @@ public class Help extends JFrame {
         setLocationRelativeTo(null);
     }
 
+    // настройка документа
     public void go(){
         mainPane = new JTextPane();
         doc = createDocument(mainPane);
@@ -61,6 +62,7 @@ public class Help extends JFrame {
         this.add(scroll);
     }
 
+    // включение самого текста
     private StyledDocument createDocument(JTextPane tp){
         Style normal = tp.addStyle("Normal" , null);
         StyleConstants.setFontFamily(normal,  "Verdana");
@@ -84,6 +86,7 @@ public class Help extends JFrame {
         return doc;
     }
 
+    //вставка строки в документ
     private void insertString(String s, JTextPane tp, Style style) {
         try {
             Document doc = tp.getDocument();

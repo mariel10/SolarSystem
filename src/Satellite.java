@@ -6,6 +6,7 @@ public class Satellite extends Planet {
         super(name, mass, radius, a1, e1, i1, T1);
         colors = color;
     }
+    //вычисляет положение спутника в начале координат, а потом переносить центр в центр соответствующей планеты
     public double[] getCoords(double dt, double[] xyzPlanet){
         double[] xyzMoon = super.getCoords(dt);
         xyzMoon[0] += xyzPlanet[0];
@@ -14,7 +15,4 @@ public class Satellite extends Planet {
         return xyzMoon;
     }
     public int[] getColors(){return colors;}
-    public ArrayList<Triangle> createSketch() {
-        return super.createSketch(getRadius());
-    }
 }
